@@ -1,7 +1,7 @@
 package com.github.lucasyukio.caseitauautorizador.repository;
 
 import com.github.lucasyukio.caseitauautorizador.model.Account;
-import com.github.lucasyukio.caseitauautorizador.model.Balance;
+import com.github.lucasyukio.caseitauautorizador.model.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,14 +55,14 @@ public class AccountRepositoryTest {
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 LocalDateTime.now(),
-                new Balance(BigDecimal.ZERO, Currency.getInstance("BRL"))
+                new Money(BigDecimal.ZERO, Currency.getInstance("BRL"))
         );
 
         Account acc2 = new Account(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 LocalDateTime.now(),
-                new Balance(BigDecimal.ZERO, Currency.getInstance("BRL"))
+                new Money(BigDecimal.ZERO, Currency.getInstance("BRL"))
         );
 
         accountRepository.saveAccountsBatch(List.of(acc1, acc2));
@@ -79,14 +79,14 @@ public class AccountRepositoryTest {
                 accountId,
                 UUID.randomUUID(),
                 LocalDateTime.now(),
-                new Balance(BigDecimal.ZERO, Currency.getInstance("BRL"))
+                new Money(BigDecimal.ZERO, Currency.getInstance("BRL"))
         );
 
         Account acc2 = new Account(
                 accountId,
                 UUID.randomUUID(),
                 LocalDateTime.now(),
-                new Balance(BigDecimal.ZERO, Currency.getInstance("BRL"))
+                new Money(BigDecimal.ZERO, Currency.getInstance("BRL"))
         );
 
         accountRepository.saveAccountsBatch(List.of(acc1));

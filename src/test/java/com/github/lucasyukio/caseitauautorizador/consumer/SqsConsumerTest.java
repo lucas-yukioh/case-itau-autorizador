@@ -1,5 +1,6 @@
 package com.github.lucasyukio.caseitauautorizador.consumer;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Testcontainers
@@ -68,6 +69,8 @@ class SqsConsumerTest {
         registry.add("aws.sqs.endpoint",
                 () -> localstack.getEndpointOverride(LocalStackContainer.Service.SQS).toString());
         registry.add("aws.sqs.queueUrl", () -> queueUrl);
+
+        registry.add("sqs.poller.count", () -> 1);
     }
 
     @Autowired
@@ -99,7 +102,6 @@ class SqsConsumerTest {
 
     @Test
     void shouldSkipInvalidJsonMessages() throws Exception {
-        // Send invalid JSON
         sqsAsyncClient.sendMessage(SendMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .messageBody("{\"invalid-json\":}")
@@ -119,7 +121,6 @@ class SqsConsumerTest {
                 "created_at":"1730865931","status":"ENABLED"}}
                 """;
 
-        // Send same message twice
         sqsAsyncClient.sendMessage(SendMessageRequest.builder().queueUrl(queueUrl).messageBody(messageBody).build()).get();
         sqsAsyncClient.sendMessage(SendMessageRequest.builder().queueUrl(queueUrl).messageBody(messageBody).build()).get();
 

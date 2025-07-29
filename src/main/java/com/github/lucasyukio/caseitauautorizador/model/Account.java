@@ -5,6 +5,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,12 +25,15 @@ public class Account {
     private LocalDateTime createdAt;
 
     @Embedded
-    private Balance balance;
+    private Money balance;
+
+    @Version
+    private Long version;
 
     public Account() {
     }
 
-    public Account(UUID id, UUID owner, LocalDateTime createdAt, Balance balance) {
+    public Account(UUID id, UUID owner, LocalDateTime createdAt, Money balance) {
         this.id = id;
         this.owner = owner;
         this.createdAt = createdAt;
@@ -45,6 +49,6 @@ public class Account {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public Balance getBalance() { return balance; }
-    public void setBalance(Balance balance) { this.balance = balance; }
+    public Money getBalance() { return balance; }
+    public void setBalance(Money balance) { this.balance = balance; }
 }

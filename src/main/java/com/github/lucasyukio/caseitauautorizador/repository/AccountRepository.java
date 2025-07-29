@@ -1,33 +1,9 @@
 package com.github.lucasyukio.caseitauautorizador.repository;
 
 import com.github.lucasyukio.caseitauautorizador.model.Account;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.UUID;
 
-@Repository
-public class AccountRepository {
-
-    private final JdbcTemplate jdbcTemplate;
-
-    public AccountRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public void saveAccountsBatch(List<Account> accounts) {
-        String sql = """
-                INSERT INTO accounts (id, owner, created_at, amount, currency)
-                VALUES (?, ?, ?, ?, ?)
-                ON CONFLICT (id) DO NOTHING
-                """;
-
-        jdbcTemplate.batchUpdate(sql, accounts, 500, (ps, acc) -> {
-            ps.setObject(1, acc.getId());
-            ps.setObject(2, acc.getOwner());
-            ps.setObject(3, acc.getCreatedAt());
-            ps.setBigDecimal(4, acc.getBalance().getAmount());
-            ps.setString(5, acc.getBalance().getCurrency().getCurrencyCode());
-        });
-    }
+public interface AccountRepository extends JpaRepository<Account, UUID>, AccountBatchRepository {
 }

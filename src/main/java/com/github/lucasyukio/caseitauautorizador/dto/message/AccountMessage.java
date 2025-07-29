@@ -1,4 +1,4 @@
-package com.github.lucasyukio.caseitauautorizador.dto;
+package com.github.lucasyukio.caseitauautorizador.dto.message;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

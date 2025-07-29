@@ -1,10 +1,10 @@
 package com.github.lucasyukio.caseitauautorizador.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.lucasyukio.caseitauautorizador.dto.AccountMessage;
-import com.github.lucasyukio.caseitauautorizador.dto.OuterMessage;
+import com.github.lucasyukio.caseitauautorizador.dto.message.AccountMessage;
+import com.github.lucasyukio.caseitauautorizador.dto.message.OuterMessage;
 import com.github.lucasyukio.caseitauautorizador.model.Account;
-import com.github.lucasyukio.caseitauautorizador.model.Balance;
+import com.github.lucasyukio.caseitauautorizador.model.Money;
 import com.github.lucasyukio.caseitauautorizador.repository.AccountRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -38,8 +38,10 @@ public class SqsBatchConsumer {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-    private static final int POLLER_COUNT = 5;
     private volatile boolean running = true;
+
+    @Value("${sqs.poller.count}")
+    private int pollerCount;
 
     @Value("${aws.sqs.queueUrl}")
     private String queueUrl;
@@ -52,7 +54,7 @@ public class SqsBatchConsumer {
 
     @PostConstruct
     public void startPolling() {
-        for (int i = 0; i < POLLER_COUNT; i++) {
+        for (int i = 0; i < pollerCount; i++) {
             pollMessages();
         }
     }
@@ -103,7 +105,7 @@ public class SqsBatchConsumer {
                             accountMessage.id(),
                             accountMessage.owner(),
                             createdAt,
-                            new Balance(BigDecimal.ZERO, Currency.getInstance("BRL"))
+                            new Money(BigDecimal.ZERO, Currency.getInstance("BRL"))
                     );
                 } catch (Exception e) {
                     throw new RuntimeException("Invalid Message: " + msg.body(), e);

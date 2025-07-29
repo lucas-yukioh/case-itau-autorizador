@@ -1,5 +1,6 @@
 package com.github.lucasyukio.caseitauautorizador.model;
 
+import com.github.lucasyukio.caseitauautorizador.model.utils.CurrencyConverter;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 
@@ -7,17 +8,17 @@ import java.math.BigDecimal;
 import java.util.Currency;
 
 @Embeddable
-public class Balance {
+public class Money {
 
     private BigDecimal amount;
 
     @Convert(converter = CurrencyConverter.class)
     private Currency currency;
 
-    public Balance() {
+    public Money() {
     }
 
-    public Balance(BigDecimal amount, Currency currency) {
+    public Money(BigDecimal amount, Currency currency) {
         this.amount = amount;
         this.currency = currency;
     }

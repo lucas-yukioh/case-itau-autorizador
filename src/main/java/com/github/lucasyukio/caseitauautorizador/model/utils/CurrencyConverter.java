@@ -1,4 +1,4 @@
-package com.github.lucasyukio.caseitauautorizador.model;
+package com.github.lucasyukio.caseitauautorizador.model.utils;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

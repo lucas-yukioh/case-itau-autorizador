@@ -1,5 +1,6 @@
 package com.github.lucasyukio.caseitauautorizador.model;
 
+import com.github.lucasyukio.caseitauautorizador.model.utils.CurrencyConverter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Currency;
