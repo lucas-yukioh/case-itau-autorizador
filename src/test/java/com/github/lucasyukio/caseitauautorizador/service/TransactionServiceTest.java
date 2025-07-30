@@ -8,6 +8,7 @@ import com.github.lucasyukio.caseitauautorizador.model.Transaction;
 import com.github.lucasyukio.caseitauautorizador.repository.AccountRepository;
 import com.github.lucasyukio.caseitauautorizador.repository.TransactionRepository;
 import com.github.lucasyukio.caseitauautorizador.service.impl.TransactionServiceImpl;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,9 +49,10 @@ class TransactionServiceTest {
 
     @BeforeEach
     void setUp() {
+        MeterRegistry meterRegistry = mock(MeterRegistry.class);
         accountRepository = mock(AccountRepository.class);
         transactionRepository = mock(TransactionRepository.class);
-        transactionService = new TransactionServiceImpl(accountRepository, transactionRepository);
+        transactionService = new TransactionServiceImpl(accountRepository, transactionRepository, meterRegistry);
     }
 
     @Test

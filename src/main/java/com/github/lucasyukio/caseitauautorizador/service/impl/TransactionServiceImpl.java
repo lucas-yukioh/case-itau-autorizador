@@ -13,6 +13,8 @@ import com.github.lucasyukio.caseitauautorizador.model.enums.TransactionType;
 import com.github.lucasyukio.caseitauautorizador.repository.AccountRepository;
 import com.github.lucasyukio.caseitauautorizador.repository.TransactionRepository;
 import com.github.lucasyukio.caseitauautorizador.service.TransactionService;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -28,13 +30,19 @@ public class TransactionServiceImpl implements TransactionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
+    private final Counter successfulTransactions;
+    private final Counter failedTransactions;
+
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
     @Value("${transaction.max-retries}")
     private int maxRetries;
 
-    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository, MeterRegistry meterRegistry) {
+        this.successfulTransactions = meterRegistry.counter("transactions_success_total");
+        this.failedTransactions = meterRegistry.counter("transactions_failed_total");
+
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
     }
@@ -84,9 +92,7 @@ public class TransactionServiceImpl implements TransactionService {
         accountRepository.save(account);
     }
 
-    private TransactionResponse createAndSaveTransaction(TransactionRequest request,
-                                                         TransactionStatus status,
-                                                         Account account) {
+    private TransactionResponse createAndSaveTransaction(TransactionRequest request, TransactionStatus status, Account account) {
         Transaction transaction = new Transaction(
                 UUID.randomUUID(),
                 request.type(),
@@ -98,6 +104,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         transactionRepository.save(transaction);
 
+        incrementCounter(status);
+
         return new TransactionResponse(
                 transaction.getId(),
                 transaction.getType(),
@@ -106,5 +114,13 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.getTransactionDate(),
                 new AccountResponse(account.getId(), new AccountBalanceResponse(account.getBalance().getAmount(), account.getBalance().getCurrency()))
         );
+    }
+
+    private void incrementCounter(TransactionStatus status) {
+        if (TransactionStatus.SUCCEEDED == status) {
+            successfulTransactions.increment();
+        } else {
+            failedTransactions.increment();
+        }
     }
 }
