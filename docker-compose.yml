@@ -56,6 +56,30 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: case-itau-autorizador
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/accountsdb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - AWS_SQS_QUEUEURL=http://localstack:4566/000000000000/conta-bancaria-criada
+      - AWS_SQS_ENDPOINT=http://localstack:4566
+      - AWS_SQS_ACCESSKEY=test
+      - AWS_SQS_SECRETKEY=test
+    depends_on:
+      localstack:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      message-generator:
+        condition: service_completed_successfully
+    restart: always
             
   message-generator:
     image: golang:1.24.3
